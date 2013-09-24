@@ -1,6 +1,7 @@
 <?php
 class FBGallery
-{
+{	/*Uncomment the following to exclude albums - buckneri 9-24-13*/
+	//public $excluded_albums = "AND name <> 'Profile Pictures' AND name <> 'Timeline Photos' AND name <> 'Cover Photos'";
 	public function __construct($id,$breadcrumbs,$cache=array())
 	{
 		/**
@@ -32,11 +33,12 @@ class FBGallery
 	{
 		/**
 		* Sends each request Facebook (currently only for 'albums' and 'photos')
+		* album exclusion added by buckneri 9-24-13
 		*/
 		if(!empty($id))
 		{
 			if($type == 'photos'){$query = "SELECT src,src_big,caption FROM photo WHERE aid = '$id'";}
-			else{$query = "SELECT aid,object_id,name,size,type FROM album WHERE owner = '$id' ORDER BY modified DESC";}
+			else{$query = "SELECT aid,object_id,name,size,type FROM album WHERE owner = {$id} {$this->excluded_albums} ORDER BY modified DESC";}
 			$url = 'https://graph.facebook.com/fql?q='.rawurlencode($query).'&format=json-strings';
 			$ch = curl_init($url);
 			curl_setopt($ch, CURLOPT_HEADER,0);
